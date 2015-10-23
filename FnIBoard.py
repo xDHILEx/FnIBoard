@@ -71,7 +71,7 @@ def Key(Scale, Root):
     c = [ theKey[i] for i in b]
     return(c)
 
-
-#print(FretBoard('D', 'A', 'F', 'C', 'G', 'C')) # Drop C tuning
-#print(Key('Minor', 'D#'))
-#print(IntervalBoard('E', 'B', 'G', 'D', 'A', 'D', Scale='Major', Root='D'))
+if __name__ == '__main__':
+  #print(FretBoard('D', 'A', 'F', 'C', 'G', 'C')) # Drop C tuning
+  #print(Key('Minor', 'D#'))
+  #print(IntervalBoard('E', 'B', 'G', 'D', 'A', 'D', Scale='Major', Root='D'))
