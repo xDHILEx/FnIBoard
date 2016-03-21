@@ -13,7 +13,7 @@ A  || A# | B  | C  | C# | D  | D# | E  | F  | F# | G  | G# | A  | A# | B  | C  |
 E  || F  | F# | G  | G# | A  | A# | B  | C  | C# | D  | D# | E  | F  | F# | G  | G# | A  | A# | B  | C  | C# | D  | D# |
 ```
 
-`python3 FnIBoard.py -n=24 -t=EADGBE -s=Natural_Minor -r=E`: E Natrual Minor Intervals in Standard Tuning (Guitar)
+`python3 FnIBoard.py -n=24 -t=EADGBE -s=Natural_Minor -r=E`: E Natural Minor Intervals in Standard Tuning (Guitar)
 ```
 1  || F  | 2  | 3  | G# | 4  | A# | 5  | 6  | C# | 7  | D# | 1  | F  | 2  | 3  | G# | 4  | A# | 5  | 6  | C# | 7  | D# |
 5  || 6  | C# | 7  | D# | 1  | F  | 2  | 3  | G# | 4  | A# | 5  | 6  | C# | 7  | D# | 1  | F  | 2  | 3  | G# | 4  | A# |
