@@ -1,77 +1,72 @@
-#!/usr/bin/python3
-''' This script aims to help visualize Intervals on fretted multi-stringed
- instruments in any tuning, up to the 23rd fret.
-'''
-from itertools import islice, cycle
+#!/usr/bin/env python3
+from itertools import cycle
+import re
+import argparse
 
 notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
 
-def FretBoard(*args):
-  ''' Returns a list of lists, each of those being a list of notes on a
-   fretted instrument String up to the 23rd fret.
+# Helper Function, orignially part of `FretBoard()`
+def fret_len(count, notes=notes):
+    string = []
+    cy_note = cycle(notes)
+    for i, note in enumerate(cy_note):
+        if i >= count:
+            break
+        else:
+            string.append(note)
+    return string
 
-   Notes:
-    - The index at [0] is the Tuning, consider this an open note.
-    - Arguments should be passed backward (highest to lowest) for visual
-   clarity.
+# Helper Function, originally part of `FretBoard()`
+def tuning(note):
+    return notes[note:] + notes[:note]
 
-   print(FretBoard('E', 'B', 'G', 'D', 'A', 'E'))
-  '''
-  stringsList = []
-  for arg in args:
-    note = notes.index(arg)
-    string = (list(islice(notes,note,None)) + list(islice(notes,note)))*2
-    stringsList.append(string)
-  return(stringsList)
+def key(scale, root):
+    note = tuning(root)
 
-def IntervalBoard(*args, Scale, Root):
-  ''' Returns a list of lists. Similar to the output of FretBoard, but
-   replaces matching notes with their corresponding interval number based on
-   the mode of Scale and Root note.
+    if scale == 'Major':
+        b = [0, 2, 4, 5, 7, 9, 11]
+        c = [note[i] for i in b]
+        return(c)
+    if scale == 'Natural_Minor':
+        b = [0, 2, 3, 5, 7, 8, 10]
+        c = [note[i] for i in b]
+        return(c)
+    if scale == 'Harmonic_Minor':
+        b = [0, 2, 3, 5, 7, 8, 11]
+        c = [note[i] for i in b]
+        return(c)
+    if scale == 'Melodic_Minor':
+        b = [0, 2, 3, 5, 7, 9, 11]
+        c = [note[i] for i in b]
+        return(c)
 
-   Notes:
-    - The index at [0] is the Tuning, consider this an open note.
-    - Arguments should be passed backward (highest to lowest) for visual
-   clarity.
+def strings(string):
+    return reversed([m.group().upper() for m in re.finditer(r'[a-gA-G]#?', string)])
 
-   #print(IntervalBoard('E', 'B', 'G', 'D', 'A', 'E', Scale='Major', Root='D'))
-  '''
-  stringsList = FretBoard(*args)
-  intervalsList = Key(Scale, Root)
-  stringToInterval = []
+def interval(string, scale, root):
+    for i, v in enumerate(string):
+        if v in key(scale, notes.index(root)):
+            string[i] = str(key(scale, notes.index(root)).index(v)+1)
+    return string
 
-  for string in stringsList:
-    for note in string:
-      for index, interval in enumerate(intervalsList):
-        if note == interval:
-          string[string.index(note)] = note.replace(note, str(index+1))
-    stringToInterval.append(string)
-  return(stringToInterval)
+def formatter(string):
+    fstring = '{:<2} ||'.format(string[0])
+    for x in string[1:]:
+        fstring += ' {:<2} |'.format(x)
+    return fstring
 
-def Key(Scale, Root):
-  ''' Returns a list of notes based on the mode of Scale (Heptatonic), and the
-   Root note.
-
-   #print(Key('Major', 'C#'))
-  '''
-  theKey = [];
-  note = notes.index(Root)
-  x = cycle(notes[note:] + notes[:note])
-  for i in range(12):
-    note = next(x)
-    theKey.append(note)
-
-  if Scale == 'Major':
-    b = [0, 2, 4, 5, 7, 9, 11]
-    c = [ theKey[i] for i in b]
-    return(c)
-
-  if Scale == 'Minor':
-    b = [0, 2, 3, 5, 7, 8, 10]
-    c = [ theKey[i] for i in b]
-    return(c)
 
 if __name__ == '__main__':
-  #print(FretBoard('D', 'A', 'F', 'C', 'G', 'C')) # Drop C tuning
-  #print(Key('Minor', 'D#'))
-  #print(IntervalBoard('E', 'B', 'G', 'D', 'A', 'D', Scale='Major', Root='D'))
+    parser = argparse.ArgumentParser(description='Fret and Interval Board')
+    parser.add_argument('-n','--numFrets', type=int, help='Number of frets your instrument has.', required=True)
+    parser.add_argument('-t','--Tuning', type=str, help='Tuning', required=True)
+    parser.add_argument('-s','--Scale', type=str, help='Major/Minor', required=False)
+    parser.add_argument('-r','--Root', type=str, help='A Note', required=False)
+    args = parser.parse_args()
+
+    if args.Scale and args.Root:
+        for string in strings(args.Tuning):
+            print(formatter(fret_len(args.numFrets, interval(tuning(notes.index(string)), args.Scale, args.Root))))
+    else:
+        for string in strings(args.Tuning):
+            print(formatter(fret_len(args.numFrets, tuning(notes.index(string)))))
